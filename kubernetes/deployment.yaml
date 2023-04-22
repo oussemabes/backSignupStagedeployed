@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+##metadata contains the labels spec contains selectors
+metadata:
+  name: $PROJECT_NAME
+  labels:
+    app: $PROJECT_NAME
+##specification for deployment(desired not the status status inside etcd)
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $PROJECT_NAME
+  ##spec for pod( the spec that i want (desired))
+  template:
+    metadata:
+      labels:
+        app : $PROJECT_NAME
+    spec:
+      imagePullSecrets:
+        - name : docker-registry-key
+      containers:
+      - name : $PROJECT_NAME
+        image: $DOCKER_IMAGE_NAME:$IMAGE_TAG
+        imagePullPolicy: Always
+        ports:  
+        - containerPort: 3001
+        env:
+        - name: DB_HOST
+          value: mysql-primary
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: secret-root-pwd
+        - name: DB_NAME
+          value: auctiondb
+        - name: DB_PORT
+          value: "3306"
+        - name: SERVER_PORT
+          value: "3001"
+        - name: SERVER
+          value: "139-144-162-115.ip.linodeusercontent.com"
+        - name: CLIENT_PORT
+          value: "80"
+        - name: CLIENT
+          value: "139-144-162-115.ip.linodeusercontent.com"
+        - name: ACCESS_TOKEN_SECRET
+          value: "f72636373028229ffdefd0840161533f1f67ab1d9c60c736057bba4c7b72cbc1ffa69f84ff71385b583fb8443504d4a3fd796556a8e5b63e930886b1e4122467"
+        - name: Refresh_TOKEN_SECRET
+          value: "47a41301a5a8d7c7288bafb123f71c18f3af95f24a5ee0c22b82729adb32d6e55cdddfc9440e3debfe4ea747dcaf16d23429dbff32b3e6286ee77e3820567c80"
+        - name: EXPIRES_IN
+          value: "60*5"
+        volumeMounts:
+        - name: storage-for-public-folder
+          mountPath: /app/dist/public/images
+      volumes:
+        - name: storage-for-public-folder
+          persistentVolumeClaim:
+            claimName: pvc-public-images
+  
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-public-images
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: "linode-block-storage"
+
