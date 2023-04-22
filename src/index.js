@@ -8,6 +8,6 @@ db.connect(function(err) {
   console.log("Connected!");
 });
 server.listen(
-    3004 ,
+    process.env.USER_PORT ,
   console.log(`server is running at port http://${process.env.USER_SERVER}`)
 );

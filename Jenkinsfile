@@ -17,8 +17,8 @@ pipeline {
         DB_USER = 'mahdi'
         DB_PASSWORD = 'letmein'
         DB_DATABASE = 'auctiondb'
-        DOCKER_IMAGE_NAME = 'mahdiboudaouara/user-service'
-        PROJECT_NAME = 'user-service'
+        DOCKER_IMAGE_NAME = 'mahdiboudaouara/user-management-service'
+        PROJECT_NAME = 'user-management-service'
         REPO_SERVER = '739761511001.dkr.ecr.eu-central-1.amazonaws.com'
         ECR_REGISTRY = '739761511001.dkr.ecr.eu-central-1.amazonaws.com/ecr-mahdi'
         APP_URL = '139-144-162-115.ip.linodeusercontent.com'
@@ -102,7 +102,7 @@ pipeline {
                         // git config here for the first time run
                         sh 'git config --global user.email "mahdijenkins@jenkins.com"'
                         sh 'git config --global user.name "mahdijenkins"'
-                        sh "git remote set-url origin https://${USER}:${PASS}@github.com/Mahdiboudaouara/serverP2M.git"
+                        sh "git remote set-url origin https://${USER}:${PASS}@github.com/Mahdiboudaouara/user-management-service.git"
                         sh 'git add .'
                         sh 'git commit -m "ci: version bump"'
                         sh "git push origin HEAD:${BRANCH_NAME}"

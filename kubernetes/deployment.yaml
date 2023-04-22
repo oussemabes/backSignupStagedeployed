@@ -24,7 +24,7 @@ spec:
         image: $DOCKER_IMAGE_NAME:$IMAGE_TAG
         imagePullPolicy: Always
         ports:  
-        - containerPort: 3001
+        - containerPort: 3004
         env:
         - name: DB_HOST
           value: mysql-primary
@@ -36,9 +36,9 @@ spec:
           value: auctiondb
         - name: DB_PORT
           value: "3306"
-        - name: SERVER_PORT
-          value: "3001"
-        - name: SERVER
+        - name: USER_PORT
+          value: "3004"
+        - name: USER_SERVER
           value: "139-144-162-115.ip.linodeusercontent.com"
         - name: CLIENT_PORT
           value: "80"
@@ -50,25 +50,3 @@ spec:
           value: "47a41301a5a8d7c7288bafb123f71c18f3af95f24a5ee0c22b82729adb32d6e55cdddfc9440e3debfe4ea747dcaf16d23429dbff32b3e6286ee77e3820567c80"
         - name: EXPIRES_IN
           value: "60*5"
-        volumeMounts:
-        - name: storage-for-public-folder
-          mountPath: /app/dist/public/images
-      volumes:
-        - name: storage-for-public-folder
-          persistentVolumeClaim:
-            claimName: pvc-public-images
-  
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-public-images
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: "linode-block-storage"
-
