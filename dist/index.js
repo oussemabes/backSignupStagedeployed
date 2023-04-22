@@ -11,4 +11,4 @@ db.connect(function (err) {
   if (err) throw err;
   console.log("Connected!");
 });
-server.listen(3004, console.log(`server is running at port http://${process.env.USER_SERVER}`));
+server.listen(process.env.USER_PORT, console.log(`server is running at port http://${process.env.USER_SERVER}`));
