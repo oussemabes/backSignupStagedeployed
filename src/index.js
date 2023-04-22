@@ -9,6 +9,5 @@ db.connect(function (err) {
 });
 server.listen(
   process.env.USER_PORT,
-  process.env.USER_SERVER,
   console.log(`server is running at port http://${process.env.USER_SERVER}`)
 );
