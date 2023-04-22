@@ -114,6 +114,7 @@ pipeline {
     post {
         always {
             cleanWs()
+            sh 'rm -rf node_modules' // Clean up after build
         }
     }
 }
