@@ -39,11 +39,11 @@ spec:
         - name: USER_PORT
           value: "3004"
         - name: USER_SERVER
-          value: "139-144-162-115.ip.linodeusercontent.com"
+          value: "194-195-247-34.ip.linodeusercontent.com"
         - name: CLIENT_PORT
           value: "80"
         - name: CLIENT
-          value: "139-144-162-115.ip.linodeusercontent.com"
+          value: "194-195-247-34.ip.linodeusercontent.com"
         - name: ACCESS_TOKEN_SECRET
           value: "f72636373028229ffdefd0840161533f1f67ab1d9c60c736057bba4c7b72cbc1ffa69f84ff71385b583fb8443504d4a3fd796556a8e5b63e930886b1e4122467"
         - name: Refresh_TOKEN_SECRET
