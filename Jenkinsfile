@@ -62,14 +62,12 @@ pipeline {
                             sh "docker push ${DOCKER_IMAGE_NAME}:${IMAGE_TAG}"
                         }
                     } else {
-                        build job: 'helm-auction/main', propagate: true, wait: true , parameters: [
-                            [$class: 'StringParameterValue', name: 'IMAGE_TAG', value: "${IMAGE_TAG}"],
-                            [$class: 'StringParameterValue', name: 'DOCKER_IMAGE_NAME', value: "${DOCKER_IMAGE_NAME}"],
-                            [$class: 'StringParameterValue', name: 'PROJECT_NAME', value: "${PROJECT_NAME}"]]
-                    // withKubeConfig([credentialsId: 'clusterkubeconfig', serverUrl: 'https://c81ac799-c9ef-4da4-9d8a-872d8e6400c8.eu-central-2.linodelke.net']) {
-                    //     sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
-                    //     sh 'envsubst < kubernetes/service.yaml | kubectl apply -f -'
-                    // }
+                        sh 'docker build -t ${ECR_REGISTRY}:${IMAGE_TAG} .'
+                        // Push the image to Amazon ECR
+                        withCredentials([usernamePassword(credentialsId: 'ecr-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                            sh "echo $PASS | docker login --username $USER --password-stdin ${REPO_SERVER}"
+                            sh "docker push ${ECR_REGISTRY}:${IMAGE_TAG}"
+                        }
                     }
                 }
             }
@@ -88,10 +86,14 @@ pipeline {
                             sh "ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_ADDRESS} ${shellCmd}"
                         }
                     } else {
-                        withKubeConfig([credentialsId: 'clusterkubeconfig', serverUrl: 'https://c81ac799-c9ef-4da4-9d8a-872d8e6400c8.eu-central-2.linodelke.net']) {
-                            sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
-                            sh 'envsubst < kubernetes/service.yaml | kubectl apply -f -'
-                        }
+                        build job: 'helm-auction/main', propagate: true, wait: true , parameters: [
+                            [$class: 'StringParameterValue', name: 'IMAGE_TAG', value: "${IMAGE_TAG}"],
+                            [$class: 'StringParameterValue', name: 'DOCKER_IMAGE_NAME', value: "${DOCKER_IMAGE_NAME}"],
+                            [$class: 'StringParameterValue', name: 'PROJECT_NAME', value: "${PROJECT_NAME}"]]
+                    // withKubeConfig([credentialsId: 'clusterkubeconfig', serverUrl: 'https://c81ac799-c9ef-4da4-9d8a-872d8e6400c8.eu-central-2.linodelke.net']) {
+                    //     sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
+                    //     sh 'envsubst < kubernetes/service.yaml | kubectl apply -f -'
+                    // }
                     }
                 }
             }
