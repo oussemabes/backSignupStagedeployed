@@ -10,7 +10,7 @@ pipeline {
     environment {
         SERVER_ADDRESS = ''
         SERVER_USERNAME = 'ec2-user'
-        JENKINS_SERVER_ADDRESS = '3.123.129.244'
+        JENKINS_SERVER_ADDRESS = '3.70.112.194'
         JENKINS_SERVER_USERNAME = 'ec2-user'
         DB_PORT = '3306'
         DB_HOST = '52.29.69.117'
