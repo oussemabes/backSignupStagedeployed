@@ -25,11 +25,11 @@ pipeline {
         AWS_REGION = 'eu-central-1'
     }
     stages {
-        // stage('Install Dependencies') {
-        //     steps {
-        //         sh 'npm install'
-        //     }
-        // }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
         stage('increment version') {
             steps {
                 script {
@@ -46,6 +46,11 @@ pipeline {
         //         sh 'DB_HOST=${DB_HOST} DB_PORT=${DB_PORT} DB_USER=${DB_USER}  DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_DATABASE} npm test'
         //     }
         // }
+        stage('Unit Test') {
+            steps {
+                sh 'sleep 10'
+            }
+        }
         stage('Build') {
             steps {
                 sh 'docker build -t ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} .'
