@@ -6,7 +6,11 @@ const registerValidation = (data) => {
     name: Joi.string().min(6).required(),
     email: Joi.string().min(6).required().email(),
     password: Joi.string().min(6).required(),
-    balance: Joi.number(),
+    admin: Joi.string(),
+    age: Joi.number(),
+    ref:Joi.number(),
+    gender:Joi.string()
+
   });
   return schema.validate(data);
 };

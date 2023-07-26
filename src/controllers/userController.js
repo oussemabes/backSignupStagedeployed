@@ -4,8 +4,21 @@ const jwt=require('jsonwebtoken')
 const db = require("../config");
 const { registerValidation,loginValidation } = require("../validation");
 const bcrypt = require("bcryptjs");
+const mysql = require('mysql2');
+
+const mysqlConfig = {
+  host: "18.197.128.8",
+  user: "root",
+  port: "3306",
+  password: "mysecretpassword",
+  database: "portail",
+}
+
+let con = null
 
 function checkIfUserExists(req) {
+  con =  mysql.createConnection(mysqlConfig);
+
   return new Promise((resolve, reject) => {
     console.log("Checking if user exists");
     let sqlverif = "SELECT * FROM users WHERE email= ?";
@@ -23,71 +36,28 @@ function checkIfUserExists(req) {
   });
 }
 async function registerUser(req, res) {
-    //validate data before making a user
-    const { error } = registerValidation(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-    //hash the password
+    // Validate data before creating a user
+    con =  mysql.createConnection(mysqlConfig);
+
+  
+    // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
-    //create new user
-    let data = [req.body.name, req.body.email, hashedPassword, req.body.balance || 0];
-    let sql =
-      "INSERT INTO users (name, email, Password,balance) VALUES (?,?,?,?)";
-    const userExists = await checkIfUserExists(req);
-    if (userExists == false) {
-      await db.query(sql, data, function (err, result) {
-        if (err) throw err;
-      });
-      res.send("records inserted");
-     
-    } else {
-      res.status(400).send("user with those information already exists");
-    }
-  }
-
-
-async function loginUser(req,res){
-  //validate data before login in a user
-  const { error } = loginValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-  //
-
-  const userExists = await checkIfUserExists(req);
-  if (userExists == true) {
-    //see if password matches
-    function GetDbPassword() {
-    return new Promise((resolve, reject) => {
-      let sqlverif = "SELECT id,password FROM users WHERE email= ?";
-      db.query(sqlverif, [req.body.email], (err, result) => {
+  
+    // Create new user
+    const data = [req.body.ref,req.body.name, req.body.email, hashedPassword,req.body.admin, req.body.age, req.body.gender];
+    const sql = "INSERT INTO users (ref,name, email, Password, admin, age,gender) VALUES (?,?,?,?,?,?,?)";
+    con.query(sql, data, function (err, result) {
         if (err) {
-          throw err;
+          console.error(err);
+          return res.status(500).send("Error inserting user into the database");
         }
-        console.log(result);
-        if (result.length > 0) {
-          resolve({id:result[0].id,dbPassword:result[0].password});
-        } else {
-          resolve(false);
-        }
+        res.status(200).send("User registered successfully");
       });
-    });
+    
   }
-  const {id,dbPassword}=await GetDbPassword();
-  const validPass=await bcrypt.compare(req.body.password,dbPassword)
-  const validPassNotCrypted=req.body.password==dbPassword;
-  console.log(dbPassword,req.body.password)
-  if (validPass==false && validPassNotCrypted==false){
-    res.status(400).send("password is wrong");
-  }else{
-    //create and assign token
-    const token=jwt.sign({id:id},process.env.ACCESS_TOKEN_SECRET,{expiresIn:600000000*2})
-   
+  
 
-    res.header("auth-token",token).send(token);
-   
-  }
-  } else {
-    res.status(400).send("Email is wrong");
-  }
 
-}
-module.exports={registerUser,loginUser,checkIfUserExists}
+
+module.exports={registerUser} 

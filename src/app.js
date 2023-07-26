@@ -5,7 +5,7 @@ const cors =require('cors')
 const bodyparser = require('body-parser')
 app.use(cors());
 app.use(express.json())
-
+ 
 // body-parser middleware use
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({
