@@ -8,9 +8,9 @@ const bcrypt = require("bcryptjs");
 function checkIfUserExists(req) {
   return new Promise((resolve, reject) => {
     console.log("Checking if user exists");
-    let sqlverif = "SELECT * FROM users WHERE email= ? OR ref= ?";
+    let sqlverif = "SELECT * FROM users WHERE email= ?";
 
-    db.query(sqlverif, [req.body.email,req.body.ref], (err, result) => {
+    db.query(sqlverif, [req.body.email], (err, result) => {
       if (err) {
         throw err;   
       }
@@ -36,8 +36,8 @@ async function registerUser(req, res) {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
   
     // Create new user
-    const data = [req.body.ref,req.body.name, req.body.email, hashedPassword,req.body.admin, req.body.age, req.body.gender];
-    const sql = "INSERT INTO users (ref,name, email, Password, admin, age,gender) VALUES (?,?,?,?,?,?,?)";
+    const data = [req.body.name, req.body.email, hashedPassword]
+    const sql = "INSERT INTO users (name, email, Password) VALUES (?,?,?)";
     const userExists = await checkIfUserExists(req);
     if (userExists === false) {
       await db.query(sql, data, function (err, result) {
@@ -52,8 +52,50 @@ async function registerUser(req, res) {
     }
   }
   
+async function loginUser(req,res){
+  //validate data before login in a user
+  const { error } = loginValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+  //
+
+  const userExists = await checkIfUserExists(req);
+  if (userExists == true) {
+    //see if password matches
+    function GetDbPassword() {
+    return new Promise((resolve, reject) => {
+      let sqlverif = "SELECT id,password FROM users WHERE email= ?";
+      db.query(sqlverif, [req.body.email], (err, result) => {
+        if (err) {
+          throw err;
+        }
+        console.log(result);
+        if (result.length > 0) {
+          resolve({id:result[0].id,dbPassword:result[0].password});
+        } else {
+          resolve(false);
+        }
+      }); 
+    });
+  }
+  const {id,dbPassword,ref}=await GetDbPassword();
+  const validPass=await bcrypt.compare(req.body.password,dbPassword)
+  const validPassNotCrypted=req.body.password==dbPassword;
+  if (validPass==false && validPassNotCrypted==false){
+    res.status(400).send("password is wrong");
+  }else{
+    //create and assign token
+    const token=jwt.sign({id:id},process.env.ACCESS_TOKEN_SECRET,{expiresIn:600000000*2})
+   
+
+    res.header("auth-token",token).send(token);
+   
+  }
+  } else {
+    res.status(400).send("Email is wrong");
+  }
+}
 
 
 
 
-module.exports={registerUser,checkIfUserExists} 
+module.exports={registerUser,checkIfUserExists,loginUser} 
