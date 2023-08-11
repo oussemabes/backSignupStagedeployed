@@ -3,10 +3,10 @@ const dotenv=require('dotenv');
 dotenv.config();
 const mysql = require("mysql");
 const db = mysql.createConnection({
-  host: "3.122.234.138",
+  host: "localhost",
   user: "root",
   port: "3306",
-  password: "mysecretpassword",
-  database: "portail",
+  password: "",
+  database: "centermed",
 });
-module.exports = db
+module.exports = db 

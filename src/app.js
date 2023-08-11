@@ -10,7 +10,7 @@ app.use(express.json())
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({
     extended: true 
-}))
+}))  
 
 const path = require("path");
 
@@ -19,9 +19,11 @@ const path = require("path");
 app.use(express.static(path.join(__dirname, '/public')));
 //import routes
 const authRoute=require('./routes/auth')
+const requestRoute=require('./routes/request')
 
 //route middlewares 
 app.use('/backend/user',authRoute)
+app.use('/backend/request',requestRoute)
 
 
 module.exports = { app };
