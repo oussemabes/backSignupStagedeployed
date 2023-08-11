@@ -37,6 +37,6 @@ createTables()
 
 server.listen(
   3004,
-  console.log(`server is running at port http://3005`)
+  console.log(`server is running at port http://3004`)
 );
  
