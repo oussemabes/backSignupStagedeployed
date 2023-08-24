@@ -9,7 +9,7 @@ db.connect(function (err) {
 });
 async function createTables() {
   await db.query(
-    "CREATE TABLE IF NOT EXISTS users (id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,name VARCHAR(30), email VARCHAR(30), password VARCHAR(255));",
+    "CREATE TABLE IF NOT EXISTS users (id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,name VARCHAR(30), email VARCHAR(30), password VARCHAR(255),admin VARCHAR(30));",
     function (err) {
       if (err) throw err;
       console.log("admins TABLE created.");
