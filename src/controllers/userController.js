@@ -36,8 +36,8 @@ async function registerUser(req, res) {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
   
     // Create new user
-    const data = [req.body.name, req.body.email, hashedPassword]
-    const sql = "INSERT INTO users (name, email, Password) VALUES (?,?,?)";
+    const data = [req.body.name, req.body.email, hashedPassword,req.body.admin]
+    const sql = "INSERT INTO users (name, email, Password,admin) VALUES (?,?,?,?)";
     const userExists = await checkIfUserExists(req);
     if (userExists === false) {
       await db.query(sql, data, function (err, result) {
@@ -94,8 +94,24 @@ async function loginUser(req,res){
     res.status(400).send("Email is wrong");
   }
 }
+async function displayUsersByID(req, res) {
+  const user_id = req.params.user_id
+  try {
+    const getData = `SELECT * FROM users WHERE id= ${user_id}`;
+    await db.query(getData, (err, result) => {
+      if (err) {
+        throw err;
+      }
+      res.send(result);
+    });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .send({ error: "Error retrieving data from the database" });
+  }
+}
 
 
 
-
-module.exports={registerUser,checkIfUserExists,loginUser} 
+module.exports={registerUser,checkIfUserExists,loginUser,displayUsersByID} 
